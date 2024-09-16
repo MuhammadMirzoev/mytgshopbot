@@ -14,7 +14,7 @@
 ## Установка и настройка:
 1. Клонируйте репозиторий:
 `` 
-git clone https://github.com/RobertGoodman08/telegram-bot-shop.git
+git clone https://github.com/musaewullubiy/telegram-bot-shop.git
 ``
 
 2. Установите зависимости:

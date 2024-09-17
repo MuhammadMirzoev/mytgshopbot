@@ -40,8 +40,8 @@ class Keyboards:
         self.markup = ReplyKeyboardMarkup(True, True)
         itm_btn_1 = self.set_btn('ABOUT_US')
         itm_btn_2 = self.set_btn('CATALOG')
-        itm_btn_3 = self.set_btn('MY_ORDERS')
-        itm_btn_4 = self.set_btn('BONUSES')
+        itm_btn_3 = self.set_btn('ORDER')
+        itm_btn_4 = self.set_btn('BUKKET')
         itm_btn_5 = self.set_btn('FAQ')
         itm_btn_6 = self.set_btn('TECH_SUPPORT')
         # рассположение кнопок в меню
@@ -80,17 +80,35 @@ class Keyboards:
         """
         Создает разметку кнопок в меню каталога товаров
         """
-        print('sf')
         self.markup = InlineKeyboardMarkup()
-        itm_btn_1 = self.set_inline_btn(('Наш выбор', 'our_choice_callback'))
-        itm_btn_2 = self.set_inline_btn(('Тело', 'body_callback'))
-        itm_btn_3 = self.set_inline_btn(('Лицо', 'face_callback'))
-        itm_btn_4 = self.set_inline_btn(('Дом', 'home_callback'))
-        itm_btn_5 = self.set_inline_btn(('Наборы', 'kits_callback'))
+        itm_btn_1 = self.set_inline_btn(('Токсины', 'toxines_callback'))
+        itm_btn_2 = self.set_inline_btn(('Филлеры', 'fillers_callback'))
+        itm_btn_3 = self.set_inline_btn(('Липолитики', 'lipolitiks_callback'))
+        itm_btn_4 = self.set_inline_btn(('Пилинги', 'pillings_callback'))
+        itm_btn_5 = self.set_inline_btn(('Анестетики', 'anestetiks_callback'))
+        itm_btn_6 = self.set_inline_btn(('Расходники', 'cons_callback'))
 
+        self.markup.row(itm_btn_1, itm_btn_2)
+        self.markup.row(itm_btn_3, itm_btn_4)
+        self.markup.row(itm_btn_5, itm_btn_6)
+
+        return self.markup
+
+    def toxines_menu(self):
+        self.markup = InlineKeyboardMarkup()
+        itm_btn_1 = self.set_inline_btn(('Ботулакс', 'botulax_callback'))
+        itm_btn_2 = self.set_inline_btn(('Рентокс', 'rentox_callback'))
         self.markup.row(itm_btn_1)
-        self.markup.row(itm_btn_2, itm_btn_3)
-        self.markup.row(itm_btn_4, itm_btn_5)
+        self.markup.row(itm_btn_2)
+
+        return self.markup
+
+    def fillers_menu(self):
+        self.markup = InlineKeyboardMarkup()
+        itm_btn_1 = self.set_inline_btn(('Корея', 'corea_callback'))
+        itm_btn_2 = self.set_inline_btn(('Европа', 'europe_callback'))
+        self.markup.row(itm_btn_1)
+        self.markup.row(itm_btn_2)
 
         return self.markup
 
@@ -105,38 +123,3 @@ class Keyboards:
         return InlineKeyboardButton(str(name),
                                     callback_data=str(name.id))
 
-    def set_select_category(self, category):
-        """
-        Создает разметку инлайн-кнопок в
-        выбранной категории товара и возвращает разметку
-        """
-        self.markup = InlineKeyboardMarkup(row_width=1)
-        # загружаем в название инлайн кнопок данные
-        # с БД в соответствие с категорией товара
-        for itm in self.BD.select_all_products_category(category):
-            self.markup.add(self.set_inline_btn(itm))
-
-        return self.markup
-
-    def orders_menu(self, step, quantity):
-        """
-        Создает разметку кнопок в заказе товара и возвращает разметку
-        """
-
-        self.markup = ReplyKeyboardMarkup(True, True)
-        itm_btn_1 = self.set_btn('X', step, quantity)
-        itm_btn_2 = self.set_btn('DOUWN', step, quantity)
-        itm_btn_3 = self.set_btn('AMOUNT_PRODUCT', step, quantity)
-        itm_btn_4 = self.set_btn('UP', step, quantity)
-
-        itm_btn_5 = self.set_btn('BACK_STEP', step, quantity)
-        itm_btn_6 = self.set_btn('AMOUNT_ORDERS', step, quantity)
-        itm_btn_7 = self.set_btn('NEXT_STEP', step, quantity)
-        itm_btn_8 = self.set_btn('APPLAY', step, quantity)
-        itm_btn_9 = self.set_btn('<<', step, quantity)
-        # рассположение кнопок в меню
-        self.markup.row(itm_btn_1, itm_btn_2, itm_btn_3, itm_btn_4)
-        self.markup.row(itm_btn_5, itm_btn_6, itm_btn_7)
-        self.markup.row(itm_btn_9, itm_btn_8)
-
-        return self.markup

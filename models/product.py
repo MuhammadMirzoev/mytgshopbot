@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship, backref
 
 # импортируем модель Категория для связки моделей
 from models.category import Category
+from models.subcategory import Subcategory
 from data_base.dbcore import Base
 
 
@@ -19,14 +20,22 @@ class Products(Base):
     # поля таблицы
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
-    title = Column(String)
     price = Column(Float)
     quantity = Column(Integer)
     is_active = Column(Boolean)
+    photo_path = Column(String)
+    subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     category_id = Column(Integer, ForeignKey('category.id'))
+
     # для каскадного удаления данных из таблицы
     category = relationship(
         Category,
+        backref=backref('products',
+                        uselist=True,
+                        cascade='delete,all'))
+
+    subcategory = relationship(
+        Subcategory,
         backref=backref('products',
                         uselist=True,
                         cascade='delete,all'))
@@ -35,4 +44,4 @@ class Products(Base):
         """
         Метод возвращает формальное строковое представление указанного объекта
         """
-        return f"{self.name} {self.title} {self.price}"
+        return f"{self.name} {self.price}"

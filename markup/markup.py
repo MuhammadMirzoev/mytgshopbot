@@ -81,34 +81,46 @@ class Keyboards:
         Создает разметку кнопок в меню каталога товаров
         """
         self.markup = InlineKeyboardMarkup()
-        itm_btn_1 = self.set_inline_btn(('Токсины', 'toxines_callback'))
-        itm_btn_2 = self.set_inline_btn(('Филлеры', 'fillers_callback'))
-        itm_btn_3 = self.set_inline_btn(('Липолитики', 'lipolitiks_callback'))
-        itm_btn_4 = self.set_inline_btn(('Пилинги', 'pillings_callback'))
-        itm_btn_5 = self.set_inline_btn(('Анестетики', 'anestetiks_callback'))
-        itm_btn_6 = self.set_inline_btn(('Расходники', 'cons_callback'))
+        categories = self.BD.select_all_categories()
+        print(categories)
+        itm_btn_1 = self.set_inline_btn((str(categories[0]), f'{categories[0]}_callback'))
+        itm_btn_2 = self.set_inline_btn((str(categories[1]), f'{categories[1]}_callback'))
+        itm_btn_3 = self.set_inline_btn((str(categories[2]), f'{categories[2]}_callback'))
+        itm_btn_4 = self.set_inline_btn((str(categories[3]), f'{categories[3]}_callback'))
+        itm_btn_5 = self.set_inline_btn((str(categories[4]), f'{categories[4]}_callback'))
+        itm_btn_6 = self.set_inline_btn((str(categories[5]), f'{categories[5]}_callback'))
+        itm_btn_7 = self.set_inline_btn((str(categories[6]), f'{categories[6]}_callback'))
+        itm_btn_8 = self.set_inline_btn((str(categories[7]), f'{categories[7]}_callback'))
 
         self.markup.row(itm_btn_1, itm_btn_2)
-        self.markup.row(itm_btn_3, itm_btn_4)
+        self.markup.row(itm_btn_3)
+        self.markup.row(itm_btn_4)
         self.markup.row(itm_btn_5, itm_btn_6)
+        self.markup.row(itm_btn_7, itm_btn_8)
 
         return self.markup
 
-    def toxines_menu(self):
+    def subcategory_menu(self, category):
         self.markup = InlineKeyboardMarkup()
-        itm_btn_1 = self.set_inline_btn(('Ботулакс', 'botulax_callback'))
-        itm_btn_2 = self.set_inline_btn(('Рентокс', 'rentox_callback'))
-        self.markup.row(itm_btn_1)
-        self.markup.row(itm_btn_2)
+        subs = self.BD.select_subcategories(category)
+        category_id = self.BD.get_category_id_from_name(category)
+        for i in range(len(subs)):
+            itm_btn = self.set_inline_btn((str(subs[i]), f'subs_{category_id}_{subs[i].id}_callback'))
+            self.markup.row(itm_btn)
 
         return self.markup
 
-    def fillers_menu(self):
+    def products_menu(self, category, subcategory=3, num=0):
         self.markup = InlineKeyboardMarkup()
-        itm_btn_1 = self.set_inline_btn(('Корея', 'corea_callback'))
-        itm_btn_2 = self.set_inline_btn(('Европа', 'europe_callback'))
-        self.markup.row(itm_btn_1)
-        self.markup.row(itm_btn_2)
+        products = self.BD.select_products(category, subcategory)
+        num = num % len(products)
+        itm_btn_1 = self.set_inline_btn((f'Купить | {products[num].price} руб', f'order_{products[num].id}_callback'))
+        itm_btn_2 = self.set_inline_btn(('<', f'<_{category}_{subcategory}_{num}_callback'))
+        itm_btn_3 = self.set_inline_btn((f'{num + 1}/{len(products)}', f'order_{products[num].id}_callback'))
+        itm_btn_4 = self.set_inline_btn(('>', f'>_{category}_{subcategory}_{num}_callback'))
+
+        self.markup.add(itm_btn_1)
+        self.markup.add(itm_btn_2, itm_btn_3, itm_btn_4)
 
         return self.markup
 

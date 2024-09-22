@@ -36,6 +36,14 @@ class HandlerAllText(Handler):
         Обработка события нажатия на кнопку 'Корзина'
         """
         self.bot.send_message(message.chat.id, MESSAGES['bukket'])
+        orders = self.BD.get_orders_by_user_id(message.from_user.id)
+        if len(orders) > 0:
+            self.bot.send_message(message.chat.id, f'Ваши заказы')
+            for i in orders:
+                product = self.BD.get_product(i.product_id)
+                self.bot.send_message(message.chat.id, f'{product.name} {product.price} {i.quantity}')
+        else:
+            self.bot.send_message(message.chat.id, 'Вы еще не сделали ни одного заказа')
 
     def pressed_btn_faq(self, message):
         """

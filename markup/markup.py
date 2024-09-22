@@ -82,7 +82,6 @@ class Keyboards:
         """
         self.markup = InlineKeyboardMarkup()
         categories = self.BD.select_all_categories()
-        print(categories)
         itm_btn_1 = self.set_inline_btn((str(categories[0]), f'{categories[0]}_callback'))
         itm_btn_2 = self.set_inline_btn((str(categories[1]), f'{categories[1]}_callback'))
         itm_btn_3 = self.set_inline_btn((str(categories[2]), f'{categories[2]}_callback'))
@@ -114,9 +113,9 @@ class Keyboards:
         self.markup = InlineKeyboardMarkup()
         products = self.BD.select_products(category, subcategory)
         num = num % len(products)
-        itm_btn_1 = self.set_inline_btn((f'Купить | {products[num].price} руб', f'order_{products[num].id}_callback'))
+        itm_btn_1 = self.set_inline_btn((f'Купить | {products[num].price} руб', f'order_{products[num].id}_{category}_{subcategory}_{num}_callback'))
         itm_btn_2 = self.set_inline_btn(('<', f'<_{category}_{subcategory}_{num}_callback'))
-        itm_btn_3 = self.set_inline_btn((f'{num + 1}/{len(products)}', f'order_{products[num].id}_callback'))
+        itm_btn_3 = self.set_inline_btn((f'{num + 1}/{len(products)}', f'nums_{products[num].id}_callback'))
         itm_btn_4 = self.set_inline_btn(('>', f'>_{category}_{subcategory}_{num}_callback'))
 
         self.markup.add(itm_btn_1)
@@ -124,14 +123,36 @@ class Keyboards:
 
         return self.markup
 
+    def make_order_menu(self, category, subcategory, product_id, num, quantity, delivery=0):
+        self.markup = InlineKeyboardMarkup()
+        itm_btn_1 = self.set_inline_btn((f'-', f'-_{category}_{subcategory}_{product_id}_{num}_{quantity}_{delivery}_callback'))
+        itm_btn_2 = self.set_inline_btn((f'{quantity}', 'nothing_callback'))
+        itm_btn_3 = self.set_inline_btn((f'+', f'+_{category}_{subcategory}_{product_id}_{num}_{quantity}_{delivery}_callback'))
+
+        if delivery == 0:
+            itm_btn_4 = self.set_inline_btn((f'Сдек', f'delivery_{category}_{subcategory}_{product_id}_{num}_{quantity}_{1}_callback'))
+            itm_btn_5 = self.set_inline_btn((f'Курьером', f'delivery_{category}_{subcategory}_{product_id}_{num}_{quantity}_{2}_callback'))
+        elif delivery == 1:
+            itm_btn_4 = self.set_inline_btn((f'Сдек ✅', f'nothing_callback'))
+            itm_btn_5 = self.set_inline_btn((f'Курьером ❌', f'delivery_{category}_{subcategory}_{product_id}_{num}_{quantity}_{2}_callback'))
+        elif delivery == 2:
+            itm_btn_4 = self.set_inline_btn((f'Сдек ❌', f'delivery_{category}_{subcategory}_{product_id}_{num}_{quantity}_{1}_callback'))
+            itm_btn_5 = self.set_inline_btn((f'Курьером ✅', f'nothing'))
+        itm_btn_6 = self.set_inline_btn((f'Сделать заказ', f'make_order_{product_id}_{quantity}_{delivery}_callback'))
+        itm_btn_7 = self.set_inline_btn((f'Назад', f'<_{category}_{subcategory}_{int(num) + 1}_callback'))
+
+        self.markup.add(itm_btn_1, itm_btn_2, itm_btn_3)
+        self.markup.add(itm_btn_4, itm_btn_5)
+        self.markup.add(itm_btn_6)
+        self.markup.add(itm_btn_7)
+
+        return self.markup
+
+
     @staticmethod
     def set_inline_btn(name):
         """
         Создает и возвращает инлайн кнопку по входным параметрам
         """
-        if type(name) == tuple:
-            return InlineKeyboardButton(name[0],
+        return InlineKeyboardButton(name[0],
                                     callback_data=name[1])
-        return InlineKeyboardButton(str(name),
-                                    callback_data=str(name.id))
-

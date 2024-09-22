@@ -52,15 +52,35 @@ class DBManager(metaclass=Singleton):
     def select_subcategories(self, category):
         category_id = self._session.query(Category).filter(Category.name == category).first().id
         result = self._session.query(Subcategory).filter(Subcategory.category_id == category_id).all()
+        self.close()
         return result
 
     def select_products(self, category, subcategory):
         products = self._session.query(Products).filter(Products.category_id == category).filter(Products.subcategory_id == subcategory).all()
+        self.close()
         return products
 
     def get_category_id_from_name(self, category_name):
         category_id = self._session.query(Category).filter(Category.name == category_name).first().id
+        self.close()
         return category_id
+
+    def get_product(self, product_id):
+        product = self._session.query(Products).filter(Products.id == product_id).first()
+        self.close()
+        return product
+
+    def set_order(self, quantity, product_id, user_id):
+        order = Order(quantity=quantity, product_id=product_id, user_id=user_id, data=datetime.now())
+        self._session.add(order)
+        self._session.commit()
+        self.close()
+
+    def get_orders_by_user_id(self, user_id):
+        orders = self._session.query(Order).filter(Order.user_id == user_id).all()
+        self.close()
+        return orders
+
 
     def close(self):
         """ Закрывает сесию """
